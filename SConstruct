@@ -38,4 +38,4 @@ def configure():
 
 env = Environment(ENV=os.environ)
 configure()
-env.Program('dns-archiver', ['main.c', 'pktinfo.c', 'log.c', 'archiver.c'])
+env.Program('dns-archiver', ['main.c', 'pktinfo.c', 'log.c', 'archiver.c', 'http.c'])

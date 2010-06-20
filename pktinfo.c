@@ -20,6 +20,7 @@ pktinfo_init(void)
 void
 pktinfo_free(pktinfo_t * pkt)
 {
+    log_debug("pktinfo_free(%p)", pkt);
     if (!pkt) {
         return;
     }

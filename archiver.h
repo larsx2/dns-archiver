@@ -14,5 +14,7 @@ typedef struct {
 } archive_node_t;
 
 int dns_archiver(GHashTable *, ldns_pkt *);
+void associated_node_free(associated_node_t *node);
+void archive_node_free(archive_node_t *node);
 
 #endif
