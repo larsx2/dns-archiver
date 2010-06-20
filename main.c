@@ -53,13 +53,14 @@ packet_handler(const pcap_cfg_t *pcap_cfg,
                            decoded_pkt->data_len);
 
     if (status != LDNS_STATUS_OK) {
-	log_debug("packet_handler status = %d", status);
+        log_debug("packet_handler status = %d", status);
         pktinfo_free(decoded_pkt);
         return;
     }
 
     dns_archiver(archive, decoded_dns);
 
+    ldns_pkt_free(decoded_dns);
     pktinfo_free(decoded_pkt);
 }
 
@@ -137,9 +138,9 @@ int main(int argc, char **argv)
     pcap_init(&pcap_cfg);
 
     archive = g_hash_table_new_full(g_str_hash, g_str_equal, NULL,
-	                            (GDestroyNotify)archive_node_free);
+                                    (GDestroyNotify)archive_node_free);
 
-    webserver_init("127.0.0.1", 8081, archive);
+    webserver_init("0.0.0.0", 8081, archive);
 
     event_loop(0);
 

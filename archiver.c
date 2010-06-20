@@ -61,50 +61,49 @@
 #include "archiver.h"
 #include "log.h"
 
-
 static associated_node_t *
-associated_node_new(const char *key, const uint8_t type, const time_t ts) 
+associated_node_new(const char *key, const uint8_t type, const time_t ts)
 {
     associated_node_t *node;
 
     node = malloc(sizeof(associated_node_t));
 
     if (node == NULL) {
-	return(NULL);
+        return(NULL);
     }
 
     node->key  = strdup(key);
     node->type = type;
     node->ts   = ts;
 
-    return node;
+    return(node);
 }
 
-void 
-archive_node_free(archive_node_t *node) 
+void
+archive_node_free(archive_node_t *node)
 {
     if (node == NULL) {
-	return;
+        return;
     }
 
     if (node->key != NULL) {
-	free(node->key);
+        free(node->key);
     }
 
     if (node->associated != NULL) {
-	g_hash_table_destroy(node->associated);
+        g_hash_table_destroy(node->associated);
     }
 }
 
 void
-associated_node_free(associated_node_t *node) 
+associated_node_free(associated_node_t *node)
 {
     if (node == NULL) {
-	return;
+        return;
     }
 
     if (node->key != NULL) {
-	free(node->key);
+        free(node->key);
     }
 
     free(node);
@@ -112,7 +111,7 @@ associated_node_free(associated_node_t *node)
 
 
 static archive_node_t *
-archive_node_new(const char *key, uint32_t timeout)
+archive_node_new(const char *key, uint32_t timeout, query_type_t query_type)
 {
     archive_node_t *node;
 
@@ -123,10 +122,11 @@ archive_node_new(const char *key, uint32_t timeout)
     }
 
     node->key         = strdup(key);
-    node->associated  = g_hash_table_new_full(g_str_hash, 
-	                                      g_str_equal, 
-					      NULL,
-	                                      (GDestroyNotify)associated_node_free);
+    node->query_type  = query_type;
+    node->associated  = g_hash_table_new_full(g_str_hash,
+                                              g_str_equal,
+                                              NULL,
+                                              (GDestroyNotify)associated_node_free);
     return(node);
 }
 
@@ -143,35 +143,36 @@ archive_associated_lookup(archive_node_t *node, const char *key)
 }
 
 static associated_node_t *
-associated_lookup_or_make_insert(GHashTable *archive, const char *key) 
+associated_lookup_or_make_insert(GHashTable *archive, const char *key)
 {
     associated_node_t *node;
 
     node = g_hash_table_lookup(archive, key);
 
     if (node == NULL) {
-	node = associated_node_new(key, 0, time(NULL)); 
+        node = associated_node_new(key, 0, time(NULL));
 
-	if (node == NULL) {
-	    return(NULL);
-	}
+        if (node == NULL) {
+            return(NULL);
+        }
 
-	g_hash_table_insert(archive, node->key, node);
+        g_hash_table_insert(archive, node->key, node);
     }
 
-    return node;
+    return(node);
 }
 
 
 static archive_node_t *
-node_lookup_or_make_insert(GHashTable *archive, const char *key)
+node_lookup_or_make_insert(GHashTable *archive, const char *key,
+                           query_type_t query_type)
 {
     archive_node_t *node;
 
     node = archive_lookup(archive, key);
 
     if (node == NULL) {
-        node = archive_node_new(key, 1800);
+        node = archive_node_new(key, 1800, query_type);
 
         if (node == NULL) {
             return(NULL);
@@ -193,11 +194,11 @@ archive_lname_rname(GHashTable  *archive_hash,
     return(0);
 }
 
-static int 
+static int
 archive_list_lname(GHashTable   *archive_hash,
-	           ldns_rr_list *list,
-		   ldns_rdf     *lname,
-		   ldns_buffer  *buf)
+                   ldns_rr_list *list,
+                   ldns_rdf     *lname,
+                   ldns_buffer  *buf)
 {
     return(0);
 }
@@ -219,7 +220,7 @@ archive_lname_list(GHashTable   *archive_hash,
     status = ldns_rdf2buffer_str(buf, lname);
 
     if (status != LDNS_STATUS_OK) {
-	log_debug("ldns_rdf2buffer_str() returned error %d", status);
+        log_debug("ldns_rdf2buffer_str() returned error %d", status);
         return(-1);
     }
 
@@ -228,37 +229,35 @@ archive_lname_list(GHashTable   *archive_hash,
     log_debug("%s", lname_str);
 
     if (lname_str == NULL) {
-	log_debug("ldns_buffer2str(%p) returned null", buf);
+        log_debug("ldns_buffer2str(%p) returned null", buf);
         return(-1);
     }
-
-    printf("%s\n", lname_str);
 
     for (i = 0; i < list_count; i++) {
         ldns_rr  *rr;
         ldns_rdf *rname;
-	char     *rname_str;
+        char     *rname_str;
         int       data_offset = 0;
 
         ldns_buffer_clear(buf);
 
         /* so dns lname's are not always associated with
-        *  the actual question. A question may be for blah.com
-        *  but a lname can be stupid.com.
-        *
-        *  The issue becomes is that a caching nameserver may
-        *  aggregate records together such is the case when a
-        *  resolver returns a CNAME, it will then lookup the
-        *  CNAME and plunk that into one response.
-        *
-        *  That's cool and all, but in the case of our sniffer
-        *  we will treat all lname's as the real question, and
-        *  all right names as answers for that question.
-        *
-        *  It servers a purpose within a sniffer like this,
-        *  someone could be doing something a bit shady in that
-        *  they give out an answer for one address, but then
-        *  actually answer a completely different lname. */
+         *  the actual question. A question may be for blah.com
+         *  but a lname can be stupid.com.
+         *
+         *  The issue becomes is that a caching nameserver may
+         *  aggregate records together such is the case when a
+         *  resolver returns a CNAME, it will then lookup the
+         *  CNAME and plunk that into one response.
+         *
+         *  That's cool and all, but in the case of our sniffer
+         *  we will treat all lname's as the real question, and
+         *  all right names as answers for that question.
+         *
+         *  It servers a purpose within a sniffer like this,
+         *  someone could be doing something a bit shady in that
+         *  they give out an answer for one address, but then
+         *  actually answer a completely different lname. */
 
         rr = ldns_rr_list_rr(list, i);
 
@@ -281,27 +280,30 @@ archive_lname_list(GHashTable   *archive_hash,
 
         if (lname_node == NULL) {
             /* find our question in our hash table */
-	    /* if it doesn't exist, create it */
+            /* if it doesn't exist, create it */
             lname_node =
-                node_lookup_or_make_insert(archive_hash, lname_str);
+                node_lookup_or_make_insert(archive_hash, lname_str, QUESTION);
         }
 
-	/* now add this answer to the association hash */ 
+        /* now add this answer to the association hash */
         rname = ldns_rr_rdf(rr, data_offset);
 
-	if (rname == NULL) {
-	    continue;
-	}
+        if (rname == NULL) {
+            continue;
+        }
 
         ldns_rdf2buffer_str(buf, rname);
-	rname_str = ldns_buffer2str(buf);
+        rname_str = ldns_buffer2str(buf);
 
-	if (rname_str == NULL) {
-	    continue;
-	}
-	
-        printf("  - %s\n", ldns_buffer2str(buf));
-	associated_lookup_or_make_insert(lname_node->associated, rname_str);
+        if (rname_str == NULL) {
+            continue;
+        }
+
+        associated_lookup_or_make_insert(lname_node->associated, rname_str);
+
+        /* now put the question as an answer into the archive hash */
+        lname_node = node_lookup_or_make_insert(archive_hash, rname_str, ANSWER);
+        associated_lookup_or_make_insert(lname_node->associated, lname_str);
 
     }
 
@@ -329,22 +331,22 @@ archive(GHashTable *archive_hash,
     log_debug("%d qa_rrcount", qa_rrcount);
 
     for (i = 0; i < qa_rrcount; i++) {
-        ldns_rr    *question_rr;
-        ldns_rdf   *rdf_data;
-	int         ret;
+        ldns_rr  *question_rr;
+        ldns_rdf *rdf_data;
+        int       ret;
 
         question_rr = ldns_rr_list_rr(questions, i);
         rdf_data    = ldns_rr_owner(question_rr);
 
-	log_debug("archive(): rdf_data = %p", rdf_data);
+        log_debug("archive(): rdf_data = %p", rdf_data);
 
         /* plop all the answers into the correct archive_node_t's
          * associated_nodes hash. */
         ret = archive_lname_list(archive_hash, rdf_data, answers, dns_buffer);
 
-	if (ret < 0) {
-	    log_debug("archive_lname_list() returned error");
-	}
+        if (ret < 0) {
+            log_debug("archive_lname_list() returned error");
+        }
         /* archive_lname_list(archive_hash, rdf_data, authorities, dns_buffer); */
     }
 
@@ -355,9 +357,9 @@ archive(GHashTable *archive_hash,
 int
 dns_archiver(GHashTable *archive_hash, ldns_pkt *dnspkt)
 {
-    ldns_rr_list   *questions;
-    ldns_rr_list   *answers;
-    ldns_rr_list   *authorities;
+    ldns_rr_list *questions;
+    ldns_rr_list *answers;
+    ldns_rr_list *authorities;
 
     if (!ldns_pkt_qr(dnspkt)) {
         /* in our case, we only care about
@@ -367,7 +369,7 @@ dns_archiver(GHashTable *archive_hash, ldns_pkt *dnspkt)
 
     if (!ldns_pkt_qdcount(dnspkt) || !ldns_pkt_ancount(dnspkt)) {
         /* no questions or answers */
-	log_debug("dns_archiver() packet did not contain answer");
+        log_debug("dns_archiver() packet did not contain answer");
         return(0);
     }
 
@@ -376,7 +378,7 @@ dns_archiver(GHashTable *archive_hash, ldns_pkt *dnspkt)
     authorities = ldns_pkt_authority(dnspkt);
 
     if (archive(archive_hash, questions, answers, authorities) < 0) {
-	log_debug("dns_archiver(): archive() returned -1");
+        log_debug("dns_archiver(): archive() returned -1");
         return(-1);
     }
 

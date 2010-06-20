@@ -1,0 +1,90 @@
+After running fetch_recurse.py localhost:8081 we get the
+following output. I have added comments inline with the '#'
+character to the first segment.
+
+19.71.92.109.bl.spamcop.net.            # A DNS *question* seen on the wire
+    127.0.0.2                           #  An answer seen for the *question* 19.71.92.109.bl.spamcop.net.
+      239.54.204.117.bl.spamcop.net.    #   All of the other QUESTIONS seen with an ANSWER of "127.0.0.2"
+      250.101.210.87.bl.spamcop.net.
+      200.82.12.86.bl.spamcop.net.
+      89.17.133.95.bl.spamcop.net.
+      19.71.92.109.bl.spamcop.net.
+      152.218.111.78.bl.spamcop.net.
+      254.15.140.41.bl.spamcop.net.
+      
+152.218.111.78.bl.spamcop.net.
+    127.0.0.2
+      239.54.204.117.bl.spamcop.net.
+      250.101.210.87.bl.spamcop.net.
+      200.82.12.86.bl.spamcop.net.
+      89.17.133.95.bl.spamcop.net.
+      19.71.92.109.bl.spamcop.net.
+      152.218.111.78.bl.spamcop.net.
+      254.15.140.41.bl.spamcop.net.
+      
+www.google.com.
+    www.l.google.com.
+      www.google.com.
+      74.125.157.99
+      
+89.17.133.95.bl.spamcop.net.
+    127.0.0.2
+      239.54.204.117.bl.spamcop.net.
+      250.101.210.87.bl.spamcop.net.
+      200.82.12.86.bl.spamcop.net.
+      89.17.133.95.bl.spamcop.net.
+      19.71.92.109.bl.spamcop.net.
+      152.218.111.78.bl.spamcop.net.
+      254.15.140.41.bl.spamcop.net.
+      
+89-17-133-95.pool.ukrtel.net.
+    95.133.17.89
+      89-17-133-95.pool.ukrtel.net.
+      
+ackers.net.
+    174.133.249.147
+      ackers.net.
+      
+250.101.210.87.bl.spamcop.net.
+    127.0.0.2
+      239.54.204.117.bl.spamcop.net.
+      250.101.210.87.bl.spamcop.net.
+      200.82.12.86.bl.spamcop.net.
+      89.17.133.95.bl.spamcop.net.
+      19.71.92.109.bl.spamcop.net.
+      152.218.111.78.bl.spamcop.net.
+      254.15.140.41.bl.spamcop.net.
+      
+239.54.204.117.bl.spamcop.net.
+    127.0.0.2
+      239.54.204.117.bl.spamcop.net.
+      250.101.210.87.bl.spamcop.net.
+      200.82.12.86.bl.spamcop.net.
+      89.17.133.95.bl.spamcop.net.
+      19.71.92.109.bl.spamcop.net.
+      152.218.111.78.bl.spamcop.net.
+      254.15.140.41.bl.spamcop.net.
+      
+ip250-101-210-87.adsl2.static.versatel.nl.
+    87.210.101.250
+      ip250-101-210-87.adsl2.static.versatel.nl.
+      
+254.15.140.41.bl.spamcop.net.
+    127.0.0.2
+      239.54.204.117.bl.spamcop.net.
+      250.101.210.87.bl.spamcop.net.
+      200.82.12.86.bl.spamcop.net.
+      89.17.133.95.bl.spamcop.net.
+      19.71.92.109.bl.spamcop.net.
+      152.218.111.78.bl.spamcop.net.
+      254.15.140.41.bl.spamcop.net.
+      
+200.82.12.86.bl.spamcop.net.
+    127.0.0.2
+      239.54.204.117.bl.spamcop.net.
+      250.101.210.87.bl.spamcop.net.
+      200.82.12.86.bl.spamcop.net.
+      89.17.133.95.bl.spamcop.net.
+      19.71.92.109.bl.spamcop.net.
+      152.218.111.78.bl.spamcop.net.
+      254.15.140.41.bl.spamcop.net.

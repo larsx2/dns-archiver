@@ -28,13 +28,13 @@ logger(gchar *log_domain,
         const char *name;
         int         mask;
     } log_level_mapping[] = {
-        { "\033[31;1m", G_LOG_LEVEL_ERROR                                                            },
-        { "\033[31;1m", G_LOG_LEVEL_CRITICAL                                                         },
-        { "\033[35;1m", G_LOG_LEVEL_WARNING                                                          },
-        { "\033[33;1m", G_LOG_LEVEL_MESSAGE                                                          },
-        { "\033[32;1m", G_LOG_LEVEL_INFO                                                             },
-        { "\033[36;1m", G_LOG_LEVEL_DEBUG                                                            },
-        { NULL,         0                                                                            }
+        { "\033[31;1m", G_LOG_LEVEL_ERROR                                                                    },
+        { "\033[31;1m", G_LOG_LEVEL_CRITICAL                                                                 },
+        { "\033[35;1m", G_LOG_LEVEL_WARNING                                                                  },
+        { "\033[33;1m", G_LOG_LEVEL_MESSAGE                                                                  },
+        { "\033[32;1m", G_LOG_LEVEL_INFO                                                                     },
+        { "\033[36;1m", G_LOG_LEVEL_DEBUG                                                                    },
+        { NULL,         0                                                                                    }
     };
 
     for (i = 0; log_level_mapping[i].name != NULL; i++) {
